@@ -100,31 +100,6 @@ geoweather-saas/
 | `POST` | `/api/favorites/add` | Agrega la ubicación actual a los favoritos del usuario. |
 
 ---
-
-## 🛡️ Archivo `.gitignore` Recomendado
-
-Para evitar subir la base de datos local, el entorno virtual o archivos temporales a GitHub, crea un archivo llamado `.gitignore` en la raíz con el siguiente contenido:
-
-```text
-# Entorno virtual
-venv/
-env/
-.venv/
-
-# Base de datos SQLite
-*.db
-*.sqlite3
-
-# Caché de Python
-__pycache__/
-*.py[cod]
-
-# Entorno e IDE
-.vscode/
-.idea/
-.env
-```
-
 ---
 
 ## 📄 Licencia
