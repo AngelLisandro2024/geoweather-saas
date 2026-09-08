@@ -22,6 +22,17 @@
 
 ---
 
+<img width="1280" height="720" alt="Captura de pantalla (1415)" src="https://github.com/user-attachments/assets/0b2a472d-9aef-4ef4-b01e-621092ed74db" />
+
+<img width="1280" height="720" alt="Captura de pantalla (1416)" src="https://github.com/user-attachments/assets/3e77d112-9528-4b69-a6cf-fd8b4ffc92e6" />
+
+<img width="1280" height="720" alt="Captura de pantalla (1417)" src="https://github.com/user-attachments/assets/6f443c36-f2a6-498d-9f20-2f8c99451ae0" />
+
+<img width="1280" height="720" alt="Captura de pantalla (1418)" src="https://github.com/user-attachments/assets/5a71aca3-d96b-481d-ac3b-a21d33116c26" />
+
+<img width="1280" height="720" alt="Captura de pantalla (1419)" src="https://github.com/user-attachments/assets/85c3ce77-18f7-4cd3-bb18-b013df970c2f" />
+
+
 ## 🛠️ Tecnologías Utilizadas
 
 - **Backend**: Python 3.10+, FastAPI, Starlette `SessionMiddleware`, Uvicorn.
@@ -105,3 +116,5 @@ geoweather-saas/
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia **MIT**. Libre para uso, modificación y distribución.
+
+👨‍💻 Autor Diseñado y desarrollado por Angel Fernández (@AngelLisandro2024).
