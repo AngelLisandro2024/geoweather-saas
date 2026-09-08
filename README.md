@@ -1,3 +1,4 @@
+[README.md](https://github.com/user-attachments/files/31931820/README.md)
 # 🌍 GeoWeather SaaS
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
@@ -6,7 +7,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=Leaflet&logoColor=white)
 
-**GeoWeather SaaS** es una aplicación web interactiva que permite consultar métricas del clima en tiempo real utilizando geolocalización dinámica y mapas interactivos. Construida sobre FastAPI y SQLite, ofrece autenticación de usuarios, gestión de ubicación por mapa interactivo y guardado de puntos favoritos.
+**GeoWeather SaaS** es una aplicación web interactiva desarrollada con **FastAPI** y **SQLite** que permite consultar métricas del clima en tiempo real utilizando geolocalización dinámica y mapas interactivos. Ofrece autenticación de usuarios con sesiones cifradas, selección directa en el mapa por coordenadas (*reverse geocoding*) y guardado de puntos favoritos.
 
 ---
 
@@ -16,14 +17,14 @@
 - 🗺️ **Mapa Interactivo (Leaflet.js)**: Haz clic en cualquier coordenadas del mapa para consultar el clima exacto de esa ubicación en vivo (*Reverse Geocoding*).
 - 🔍 **Búsqueda por Ciudad**: Motor de geocodificación que permite encontrar cualquier ciudad del mundo.
 - ⭐ **Lugares Favoritos**: Guarda ubicaciones frecuentes en tu panel personal para consultarlas con un solo clic.
-- ⚡ **API Meteorológica**: Integración con [Open-Meteo API](https://open-meteo.com/) (sin límite de req) para métricas de temperatura, sensación térmica, humedad y velocidad del viento.
-- 🎨 **Interfaz Glassmorphism**: Diseño oscuro y moderno responsivo desarrollado con Bootstrap 5 y FontAwesome.
+- ⚡ **API Meteorológica**: Integración con [Open-Meteo API](https://open-meteo.com/) para métricas de temperatura, sensación térmica, humedad y velocidad del viento.
+- 🎨 **Interfaz Glassmorphism**: Diseño oscuro y moderno totalmente responsivo desarrollado con Bootstrap 5 y FontAwesome.
 
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
-- **Backend**: Python 3.10+, FastAPI, Starlette SessionMiddleware.
+- **Backend**: Python 3.10+, FastAPI, Starlette `SessionMiddleware`, Uvicorn.
 - **Base de Datos & ORM**: SQLite3, SQLAlchemy.
 - **Frontend & Plantillas**: Jinja2 Templates, Bootstrap 5, FontAwesome 6, JavaScript ES6 (Fetch API).
 - **Mapas y Geolocalización**: Leaflet.js, OpenStreetMap (Nominatim Reverse Geocoding).
@@ -33,39 +34,99 @@
 
 ## 🚀 Instalación y Configuración Local
 
-### Prerequisitos
+### Prerrequisitos
 
-Asegúrate de tener instalado Python 3.9 o superior en tu sistema.
+Asegúrate de tener instalado **Python 3.9+** en tu sistema.
 
-### Pasos
+### Pasos de Instalación
 
-1. **Clona el repositorio:**
+1. **Clonar el repositorio:**
    ```bash
-   git clone [https://github.com/tu-usuario/geoweather-saas.git](https://github.com/tu-usuario/geoweather-saas.git)
+   git clone https://github.com/AngelLisandro2024/geoweather-saas.git
    cd geoweather-saas
-Crea un entorno virtual:Bashpython -m venv venv
+   ```
 
-source venv/bin/activate  # En Linux/macOS
+2. **Crear y activar un entorno virtual:**
+   ```bash
+   # En Linux / macOS:
+   python3 -m venv venv
+   source venv/bin/activate
 
-# venv\Scripts\activate   # En Windows
+   # En Windows:
+   python -m venv venv
+   venv\Scripts\activate
+   ```
 
-Instala las dependencias necesarias:Bashpip install fastapi uvicorn sqlalchemy starlette httpx passlib bcrypt jinja2 python-multipart
+3. **Instalar dependencias:**
+   ```bash
+   pip install fastapi uvicorn sqlalchemy starlette httpx passlib bcrypt jinja2 python-multipart
+   ```
 
-Ejecuta el servidor de desarrollo:Bashuvicorn main:app --reload
+4. **Ejecutar el servidor de desarrollo:**
+   ```bash
+   uvicorn main:app --reload
+   ```
 
-Abre en el navegador:Visita http://127.0.0.1:8000 en tu navegador web.
+5. **Acceder a la aplicación:**
+   Abre tu navegador web e ingresa a `http://127.0.0.1:8000`.
 
-📂 Estructura del ProyectoPlaintextgeoweather-saas/
+---
+
+## 📂 Estructura del Proyecto
+
+```text
+geoweather-saas/
 ├── database.py       # Configuración de SQLAlchemy y motor SQLite
-├── models.py         # Modelos de BD (User, FavoriteLocation)
-├── auth.py           # Funciones de hashing y verificación de contraseñas
-├── main.py           # Rutas de la API, controladores y endpoints
+├── models.py         # Modelos de base de datos (User, FavoriteLocation)
+├── auth.py           # Hashing y verificación de contraseñas
+├── main.py           # Rutas de FastAPI, controladores y endpoints
 ├── static/           # Archivos estáticos (CSS custom, imágenes)
-└── templates/        # Plantillas HTML con Jinja2
-    ├── base.html
-    ├── login.html
-    ├── register.html
-    └── dashboard.html
-    
-🔌 Endpoints de la APIMétodoRutaDescripciónGET/Vista principal del Dashboard.GET/api/weather?ciudad={nombre}Consulta clima por nombre de ciudad.GET/api/weather?lat={lat}&lon={lon}Consulta clima por coordenadas del mapa.POST/api/favorites/addAgrega la ciudad actual a los favoritos del usuario.
-📄 LicenciaEste proyecto está bajo la licencia MIT. Libre para uso, modificación y distribución.
+└── templates/        # Plantillas HTML renderizadas con Jinja2
+    ├── base.html     # Layout base con CDN y navbar
+    ├── login.html    # Formulario de inicio de sesión
+    ├── register.html # Formulario de registro de usuario
+    └── dashboard.html# Panel principal con buscador, mapa y favoritos
+```
+
+---
+
+## 🔌 Endpoints de la API
+
+| Método | Ruta | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/` | Vista principal del Dashboard. |
+| `GET` | `/api/weather?ciudad={nombre}` | Consulta clima por nombre de ciudad. |
+| `GET` | `/api/weather?lat={lat}&lon={lon}` | Consulta clima por coordenadas del mapa. |
+| `POST` | `/api/favorites/add` | Agrega la ubicación actual a los favoritos del usuario. |
+
+---
+
+## 🛡️ Archivo `.gitignore` Recomendado
+
+Para evitar subir la base de datos local, el entorno virtual o archivos temporales a GitHub, crea un archivo llamado `.gitignore` en la raíz con el siguiente contenido:
+
+```text
+# Entorno virtual
+venv/
+env/
+.venv/
+
+# Base de datos SQLite
+*.db
+*.sqlite3
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+
+# Entorno e IDE
+.vscode/
+.idea/
+.env
+```
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia **MIT**. Libre para uso, modificación y distribución.
