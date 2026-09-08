@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}GeoWeather SaaS{% endblock %}</title>
+  
+  <!-- Bootstrap 5, FontAwesome & Google Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS (Mapas Interactivos) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top right, #0f172a, #020617);
+      min-height: 100vh;
+      color: #f8fafc;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #map {
+      height: 380px;
+      width: 100%;
+      border-radius: 1rem;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg border-bottom border-white border-opacity-10 bg-dark bg-opacity-50 backdrop-blur sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-4" href="/">
+        <i class="fa-solid fa-cloud-sun text-info"></i>
+        <span class="text-white">Geo</span><span class="text-gradient">Weather</span>
+      </a>
+      <div class="d-flex align-items-center gap-3">
+        {% if user %}
+          <span class="text-secondary small d-none d-md-inline">
+            <i class="fa-regular fa-user me-1 text-info"></i>{{ user.nombre }}
+          </span>
+          <a href="/logout" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+            <i class="fa-solid fa-right-from-bracket me-1"></i>Salir
+          </a>
+        {% else %}
+          <a href="/login" class="nav-link text-secondary">Ingresar</a>
+          <a href="/register" class="btn btn-info text-dark fw-bold btn-sm rounded-pill px-3">Registrarse</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4 flex-grow-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-top border-white border-opacity-10 py-3 text-center text-secondary small">
+    <div class="container">
+      <p class="mb-0">GeoWeather SaaS &copy; 2026 — FastAPI + Leaflet.js + Open-Meteo API</p>
+    </div>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

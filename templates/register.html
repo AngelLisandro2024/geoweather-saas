@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Registro | GeoWeather{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+  <div class="col-md-5 col-lg-4">
+    <div class="card glass-card rounded-4 p-4 shadow-lg">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold text-white mb-1">Crear Cuenta</h3>
+        <p class="text-secondary small">Guarda tus ciudades favoritas y consulta el clima en tiempo real</p>
+      </div>
+
+      {% if error %}
+      <div class="alert alert-danger text-center small rounded-3 mb-3">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <form action="/register" method="POST">
+        <div class="mb-3">
+          <label class="form-label text-secondary small">Nombre Completo</label>
+          <input type="text" name="nombre" class="form-control bg-dark text-white border-secondary border-opacity-25" required placeholder="Tu Nombre">
+        </div>
+        <div class="mb-3">
+          <label class="form-label text-secondary small">Correo Electrónico</label>
+          <input type="email" name="email" class="form-control bg-dark text-white border-secondary border-opacity-25" required placeholder="tu@email.com">
+        </div>
+        <div class="mb-4">
+          <label class="form-label text-secondary small">Contraseña</label>
+          <input type="password" name="password" class="form-control bg-dark text-white border-secondary border-opacity-25" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-info text-dark fw-bold w-100 rounded-pill py-2">
+          Crear Cuenta
+        </button>
+      </form>
+
+      <div class="text-center mt-4 text-secondary small">
+        ¿Ya tienes cuenta? <a href="/login" class="text-info text-decoration-none">Inicia sesión</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

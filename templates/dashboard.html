@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | GeoWeather SaaS{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  
+  <!-- Panel Principal (Búsqueda, Clima y Mapa) -->
+  <div class="col-lg-8">
+    
+    <!-- Buscador de Ciudad -->
+    <div class="card glass-card rounded-4 p-3 mb-4">
+      <form id="searchForm" class="d-flex gap-2">
+        <input type="text" id="ciudadInput" class="form-control form-control-lg bg-dark text-white border-secondary border-opacity-25 rounded-pill ps-4" placeholder="Buscar ciudad (ej. Caracas, Madrid, Tokyo)..." required>
+        <button type="submit" id="btnSearch" class="btn btn-info text-dark fw-bold rounded-pill px-4">
+          <i class="fa-solid fa-magnifying-glass me-1"></i>Buscar
+        </button>
+      </form>
+    </div>
+
+    <!-- Tarjeta de Clima en Vivo -->
+    <div id="weatherCard" class="card glass-card rounded-4 p-4 mb-4 d-none">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h2 id="cityName" class="fw-extrabold text-white mb-0">---</h2>
+          <span id="countryName" class="text-secondary small">---</span>
+        </div>
+        <button id="btnFav" type="button" class="btn btn-outline-warning rounded-pill px-3 btn-sm">
+          <i class="fa-regular fa-star me-1"></i>Guardar en Favoritos
+        </button>
+      </div>
+
+      <!-- Métricas en Grid -->
+      <div class="row g-3 text-center my-2">
+        <div class="col-3">
+          <div class="p-3 bg-dark bg-opacity-50 rounded-4 border border-white border-opacity-10">
+            <small class="text-secondary d-block mb-1">Temperatura</small>
+            <span id="temp" class="fs-3 fw-bold text-info">--°C</span>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="p-3 bg-dark bg-opacity-50 rounded-4 border border-white border-opacity-10">
+            <small class="text-secondary d-block mb-1">Sensación</small>
+            <span id="feelsLike" class="fs-3 fw-bold text-warning">--°C</span>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="p-3 bg-dark bg-opacity-50 rounded-4 border border-white border-opacity-10">
+            <small class="text-secondary d-block mb-1">Humedad</small>
+            <span id="humidity" class="fs-3 fw-bold text-primary">--%</span>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="p-3 bg-dark bg-opacity-50 rounded-4 border border-white border-opacity-10">
+            <small class="text-secondary d-block mb-1">Viento</small>
+            <span id="wind" class="fs-3 fw-bold text-success">-- km/h</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor del Mapa Interactivo -->
+    <div class="card glass-card rounded-4 p-3">
+      <h5 class="fw-bold mb-3 text-secondary small"><i class="fa-solid fa-map-location-dot me-2 text-info"></i>Ubicación Geográfica en Vivo</h5>
+      <div id="map"></div>
+    </div>
+
+  </div>
+
+  <!-- Sidebar Lateral (Ciudades Favoritas) -->
+  <div class="col-lg-4">
+    <div class="card glass-card rounded-4 p-4 h-100">
+      <h5 class="fw-bold text-white mb-3">
+        <i class="fa-solid fa-star text-warning me-2"></i>Mis Favoritos
+      </h5>
+      <p class="text-secondary small">Haz clic en cualquier ubicación para consultar su clima de inmediato:</p>
+
+      <div class="d-flex flex-column gap-2 mt-3" id="favoritesList">
+        {% if favoritos %}
+          {% for fav in favoritos %}
+            <button type="button" class="btn btn-dark border-secondary border-opacity-25 text-start p-3 rounded-4 d-flex justify-content-between align-items-center hover-glow" onclick="consultarClima('{{ fav.nombre_ciudad }}')">
+              <div>
+                <strong class="text-white d-block">{{ fav.nombre_ciudad }}</strong>
+                <small class="text-secondary">{{ fav.pais }}</small>
+              </div>
+              <i class="fa-solid fa-chevron-right text-secondary fs-6"></i>
+            </button>
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-4 text-secondary small">
+            No tienes lugares guardados todavía.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let map = null;
+  let marker = null;
+  let currentCityData = null;
+
+  // Inicialización del mapa Leaflet con listener para clics
+  function initMap(lat = 10.4806, lon = -66.9036) {
+    try {
+      if (typeof L === 'undefined') return;
+      const mapContainer = document.getElementById('map');
+      if (!mapContainer) return;
+
+      if (!map) {
+        map = L.map('map').setView([lat, lon], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        marker = L.marker([lat, lon]).addTo(map);
+
+        // EVENTO: Captura clic en cualquier lugar del mapa
+        map.on('click', (e) => {
+          const clickedLat = e.latlng.lat;
+          const clickedLng = e.latlng.lng;
+          consultarClimaPorCoords(clickedLat, clickedLng);
+        });
+
+      } else {
+        map.setView([lat, lon], 10);
+        marker.setLatLng([lat, lon]);
+      }
+      setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+    } catch (e) {
+      console.warn("Fallo al cargar o redibujar el mapa:", e);
+    }
+  }
+
+  // Renderiza la información meteorológica en el DOM
+  function renderWeatherData(data) {
+    currentCityData = data;
+
+    document.getElementById('cityName').innerText = data.ciudad || 'Ubicación Seleccionada';
+    document.getElementById('countryName').innerText = data.pais || '';
+    document.getElementById('temp').innerText = `${data.temperatura}°C`;
+    document.getElementById('feelsLike').innerText = `${data.sensacion}°C`;
+    document.getElementById('humidity').innerText = `${data.humedad}%`;
+    document.getElementById('wind').innerText = `${data.viento} km/h`;
+
+    document.getElementById('weatherCard').classList.remove('d-none');
+
+    // Mueve la vista del mapa y la marca al punto consultado
+    initMap(data.latitud, data.longitud);
+  }
+
+  // Consulta por nombre de ciudad (Buscador o Favoritos)
+  async function consultarClima(ciudad) {
+    if (!ciudad) return;
+    const btnSearch = document.getElementById('btnSearch');
+    if (btnSearch) btnSearch.disabled = true;
+
+    try {
+      const res = await fetch(`/api/weather?ciudad=${encodeURIComponent(ciudad)}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "No se encontró la ciudad indicada.");
+        return;
+      }
+
+      renderWeatherData(data);
+
+    } catch (err) {
+      console.error("Error en la petición de clima:", err);
+      alert("Error de conexión al consultar el clima.");
+    } finally {
+      if (btnSearch) btnSearch.disabled = false;
+    }
+  }
+
+  // Consulta por latitud y longitud (Clic directo en el mapa)
+  async function consultarClimaPorCoords(lat, lon) {
+    try {
+      const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "No se pudo obtener la información del lugar seleccionado.");
+        return;
+      }
+
+      renderWeatherData(data);
+
+    } catch (err) {
+      console.error("Error al consultar por coordenadas:", err);
+      alert("Error de conexión al consultar las coordenadas.");
+    }
+  }
+
+  // Manejo defensivo del DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    initMap();
+
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+      searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('ciudadInput');
+        if (input && input.value.trim()) {
+          consultarClima(input.value.trim());
+        }
+      });
+    }
+
+    const btnFav = document.getElementById('btnFav');
+    if (btnFav) {
+      btnFav.addEventListener('click', async () => {
+        if (!currentCityData) return;
+
+        const formData = new FormData();
+        formData.append('ciudad', currentCityData.ciudad);
+        formData.append('pais', currentCityData.pais || '');
+        formData.append('lat', currentCityData.latitud);
+        formData.append('lon', currentCityData.longitud);
+
+        try {
+          const res = await fetch('/api/favorites/add', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (res.ok) {
+            window.location.reload();
+          } else {
+            alert("No se pudo añadir a favoritos.");
+          }
+        } catch (e) {
+          console.error("Error al guardar favorito:", e);
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}
